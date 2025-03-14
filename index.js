@@ -3,6 +3,10 @@ import dotenv from "dotenv";
 import cors from "cors";
 import db from "./utils/db.js";
 
+
+// import all routes
+import userRoutes from './routes/user.routes.js';
+
 dotenv.config()
 
 const app = express()
@@ -16,15 +20,17 @@ app.use(cors({
 
 const port = process.env.PORT||4000;
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
 db();
 
+// UserRoutes
+
+
+app.use('/api/v1/users',userRoutes);
+
 app.get('/varun', (req, res) => {
-    res.send('Hello Varun!')
+    res.send('Hello Varun!... Hi Varun')
   })
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
