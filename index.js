@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-
+import db from "./utils/db.js";
 
 dotenv.config()
 
@@ -14,14 +14,13 @@ app.use(cors({
   allowedHeaders:['Content-Type','Authorization']
 }));
 
-
 const port = process.env.PORT||4000;
-
-
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
+
+db();
 
 app.get('/varun', (req, res) => {
     res.send('Hello Varun!')
