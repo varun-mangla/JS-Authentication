@@ -55,7 +55,15 @@ const registerUser = async (req,res)=>{
                 user: process.env.MAILTRAP_USERNAME,
                 pass: process.env.MAILTRAP_PASSWORD,
             },
-  });
+        });
+        
+        transport.verify((error, success) => {
+            if (error) {
+                console.log("Mailtrap Error:", error);
+            } else {
+                console.log("Server is ready to send emails:", success);
+            }
+        });
 
         const mailOption=nodemailer.createTransport({
             from: process.env.MAILTRAP_SENDEREMAIL,
@@ -71,6 +79,8 @@ const registerUser = async (req,res)=>{
         message:"User registered successfully",
         success:true
         })
+
+        
         
     }
     catch (error){
