@@ -1,4 +1,6 @@
 import User from "../model/User.model.js"
+import cryto from "crypto"
+import nodemailer from "nodemailer"
 
 const registerUser = async (req,res)=>{
     // get data
@@ -14,8 +16,7 @@ const registerUser = async (req,res)=>{
     if(!name || !email || !password){
         return res.status(400).json({
             message:"All fields are required"
-        });
-        
+        });   
     };
     try {
         const exisitingUser = await User.findOne({email})
@@ -24,19 +25,68 @@ const registerUser = async (req,res)=>{
                 message:"User Already exists"
             });
         }
+
+        const user = await User.create({
+            name,
+            email,
+            password
+        })
+
+        console.log(user)
+
         if (!user){
             return res.status(400).json({
                 message:" User not registered"
             });
         }
-        const user= await User.create({
-            name,
-            email,
-            password
+
+        const token= cryto.randomBytes(32).toString("hex")
+        console.log(token);
+        user.verificationToken = token
+
+        await user.save()
+
+        // Send Email
+        const transport = nodemailer.createTransport({
+            host: process.env.MAILTRAP_HOST,
+            port: process.env.MAILTRAP_PORT,
+            secure: false,
+            auth: {
+                user: process.env.MAILTRAP_USERNAME,
+                pass: process.env.MAILTRAP_PASSWORD,
+            },
+  });
+
+        const mailOption=nodemailer.createTransport({
+            from: process.env.MAILTRAP_SENDEREMAIL,
+            to: user.email,
+            subject: "Verify Your Email",
+         text: `Please click on the following link:
+        ${process.env.BASE_URL}/api/v1/users/verify/${token}`,
+        });
+
+        await transporter.sendMail(mailOption);
+
+        res.status(202).json({
+        message:"User registered successfully",
+        success:true
         })
+        
     }
     catch (error){
+        res.status(500).json({
+            message: "User not regsitered",
+            error,
+            success:false,
+        })
     }
 };
 
-export {registerUser}
+const verifyuser= async (req,res)=> {
+    // get token from url
+    // validate Token
+    // check Token
+
+}
+
+export {registerUser, verifyuser}
