@@ -86,6 +86,30 @@ const verifyuser= async (req,res)=> {
     // get token from url
     // validate Token
     // check Token
+    // find user based on Token
+    // if not find user
+    // set Isverified after it is found
+    // remove verification token
+    // save and return response
+
+    const {token}= req.params;
+    console.log(token);
+    if (!token){
+        return res.status(400).json({
+            message:"invalid Token"
+        })
+    }
+    const user = await User.findOne({verificationToken:token})
+
+    if (!user){
+        return res.status(400).json({
+            message:"invalid Token"
+        })
+    }
+
+    user.isVerified = true
+    user.verificationToken= undefined
+    await user.save()
 
 }
 
