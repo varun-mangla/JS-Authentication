@@ -121,6 +121,10 @@ const verifyuser= async (req,res)=> {
     user.verificationToken= undefined
     await user.save()
 
+};
+
+const loginUser= async(req,red)=>{
+    
 }
 
 export {registerUser, verifyuser}
